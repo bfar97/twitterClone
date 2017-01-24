@@ -1,22 +1,19 @@
 <template>
 <div class="main-container card">
   <div class="send-tweet">
-    <input type="text" name="Tweet" placeholder="Send a new Tweet">
-    <button type="button" name="submit">Tweet</button>
+    <input type="text" name="Tweet" class="form-control" placeholder="Send a new Tweet" v-model="tweet">
+    <button type="button" class="btn btn-primary" name="submit" @click="sendTweet">Tweet</button>
   </div>
   <div v-for="user in book">
-    <div class="card text-center tweets">
-      <div v-for="tweet in parseTweets(user.tweets)"  class="tweet">
+      <div v-for="tweet in parseTweets(user.tweets)"  class="tweet card text-center tweets">
         <div class="tweet-user card-header">
           <img :src="user.picture" class="userimg">
           {{ user.tag }}
         </div>
         <div class="card-block">
-          <p>{{ tweet }}</p>
+          <p>{{ tweet.name }}</p>
         </div>
-
       </div>
-    </div>
   </div>
 </div>
 </template>
@@ -38,12 +35,23 @@ let bookRef = db.ref('book')
 export default {
   name: 'app',
   firebase: {
-    book: bookRef
+    book: bookRef,
+    anArray: db.ref('book/user1/tweets')
+  },
+  data () {
+    return {
+      tweet: ''
+    }
   },
   methods: {
     parseTweets (tweets) {
       console.log(tweets)
       return typeof tweets === 'string' ? JSON.parse(tweets) : tweets
+    },
+    sendTweet () {
+      this.$firebaseRefs.anArray.push({
+        name: this.tweet
+      })
     }
   }
 }
